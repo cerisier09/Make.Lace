@@ -32,7 +32,7 @@ const artworksButton =
 
 
 // ==================================================
-// マス目設定
+// 設定
 // ==================================================
 
 const backButton =
@@ -81,7 +81,7 @@ const artworkList =
 
 
 // ==================================================
-// その他
+// グリッド
 // ==================================================
 
 const grid =
@@ -91,6 +91,11 @@ const gridViewport =
     document.getElementById(
         "gridViewport"
     );
+
+
+// ==================================================
+// ズーム
+// ==================================================
 
 const zoomOutButton =
     document.getElementById(
@@ -111,6 +116,11 @@ const zoomLabel =
     document.getElementById(
         "zoomLabel"
     );
+
+
+// ==================================================
+// タイトル
+// ==================================================
 
 const editorTitle =
     document.getElementById(
@@ -134,14 +144,17 @@ let editingArtworkId = null;
 
 
 // ==================================================
+// グリッドサイズ
+// ==================================================
+
+let cellSize = 30;
+
+
+// ==================================================
 // ズーム
 // ==================================================
 
 let gridZoom = 1;
-
-let baseGridWidth = 0;
-
-let baseGridHeight = 0;
 
 let gridPanX = 0;
 
@@ -166,9 +179,7 @@ let pinchStartMid = {
 };
 
 
-let pinchBaseLeft = 0;
-
-let pinchBaseTop = 0;
+let pinchStartRect = null;
 
 let pinchContentX = 0;
 
@@ -176,7 +187,7 @@ let pinchContentY = 0;
 
 
 // ==================================================
-// 1本指タップ
+// 1本指操作
 // ==================================================
 
 let pendingCell = null;
@@ -222,7 +233,7 @@ newArtworkButton.addEventListener(
 
 
 // ==================================================
-// 設定画面 → ホーム
+// 設定 → ホーム
 // ==================================================
 
 backButton.addEventListener(
@@ -231,7 +242,6 @@ backButton.addEventListener(
 
         settingScreen.style.display =
             "none";
-
 
         homeScreen.style.display =
             "flex";
@@ -253,12 +263,10 @@ createButton.addEventListener(
                 "artworkName"
             );
 
-
         const widthInput =
             document.getElementById(
                 "widthInput"
             );
-
 
         const heightInput =
             document.getElementById(
@@ -293,6 +301,12 @@ createButton.addEventListener(
 
 
         if (
+            !Number.isInteger(
+                currentWidth
+            ) ||
+            !Number.isInteger(
+                currentHeight
+            ) ||
             currentWidth < 1 ||
             currentHeight < 1
         ) {
@@ -327,12 +341,6 @@ createButton.addEventListener(
             currentArtworkName;
 
 
-        createGrid(
-            currentWidth,
-            currentHeight
-        );
-
-
         settingScreen.style.display =
             "none";
 
@@ -340,8 +348,224 @@ createButton.addEventListener(
         editorScreen.style.display =
             "flex";
 
+
+        createGrid(
+            currentWidth,
+            currentHeight
+        );
+
     }
 );
+
+
+// ==================================================
+// グリッドのマスサイズを決める
+// ==================================================
+
+function calculateCellSize(
+    width,
+    height
+) {
+
+    const viewportWidth =
+        gridViewport.clientWidth - 20;
+
+    const viewportHeight =
+        gridViewport.clientHeight - 20;
+
+
+    if (
+        viewportWidth <= 0 ||
+        viewportHeight <= 0
+    ) {
+
+        return 30;
+
+    }
+
+
+    /*
+     * 初期表示では、
+     * 横・縦のどちらも画面内に
+     * できるだけ収まるようにする。
+     */
+
+    const sizeByWidth =
+        viewportWidth / width;
+
+
+    const sizeByHeight =
+        viewportHeight / height;
+
+
+    let size =
+        Math.min(
+            sizeByWidth,
+            sizeByHeight,
+            50
+        );
+
+
+    /*
+     * 小さくなりすぎないようにする
+     */
+
+    size =
+        Math.max(
+            8,
+            size
+        );
+
+
+    return size;
+
+}
+
+
+// ==================================================
+// グリッドを作る
+// ==================================================
+
+function createGrid(
+    width,
+    height,
+    pattern = null
+) {
+
+    grid.innerHTML = "";
+
+
+    currentWidth =
+        width;
+
+    currentHeight =
+        height;
+
+
+    /*
+     * グリッドを作る前に
+     * 初期状態をリセット
+     */
+
+    gridZoom = 1;
+
+    gridPanX = 0;
+
+    gridPanY = 0;
+
+
+    /*
+     * CSS Gridの列数
+     */
+
+    grid.style.gridTemplateColumns =
+        `repeat(${width}, var(--cell-size))`;
+
+
+    /*
+     * マスを作る
+     */
+
+    for (
+        let row = 0;
+        row < height;
+        row++
+    ) {
+
+        for (
+            let column = 0;
+            column < width;
+            column++
+        ) {
+
+            const index =
+                row * width +
+                column;
+
+
+            const cell =
+                document.createElement(
+                    "div"
+                );
+
+
+            cell.classList.add(
+                "cell"
+            );
+
+
+            /*
+             * 保存データがある場合
+             */
+
+            if (
+                pattern &&
+                pattern[index]
+            ) {
+
+                cell.classList.add(
+                    "filled"
+                );
+
+            }
+
+
+            /*
+             * 1本指で押した
+             */
+
+            cell.addEventListener(
+                "pointerdown",
+                (event) => {
+
+                    event.preventDefault();
+
+                    pendingCell =
+                        cell;
+
+                    pointerMoved =
+                        false;
+
+                }
+            );
+
+
+            grid.appendChild(
+                cell
+            );
+
+        }
+
+    }
+
+
+    /*
+     * レイアウトが確定してから
+     * マスサイズを設定
+     */
+
+    requestAnimationFrame(
+        () => {
+
+            cellSize =
+                calculateCellSize(
+                    width,
+                    height
+                );
+
+
+            grid.style.setProperty(
+                "--cell-size",
+                `${cellSize}px`
+            );
+
+
+            updateZoom();
+
+        }
+    );
+
+}
 
 
 // ==================================================
@@ -350,54 +574,12 @@ createButton.addEventListener(
 
 function updateZoom() {
 
-    if (
-        !grid ||
-        !gridViewport
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        !baseGridWidth
-    ) {
-
-        baseGridWidth =
-            grid.offsetWidth;
-
-    }
-
-
-    if (
-        !baseGridHeight
-    ) {
-
-        baseGridHeight =
-            grid.offsetHeight;
-
-    }
-
-
     grid.style.transform =
         `translate(
             ${gridPanX}px,
             ${gridPanY}px
         )
         scale(${gridZoom})`;
-
-
-    const scaledHeight =
-        baseGridHeight *
-        gridZoom;
-
-
-    gridViewport.style.minHeight =
-        `${Math.max(
-            250,
-            scaledHeight + 40
-        )}px`;
 
 
     zoomLabel.textContent =
@@ -420,7 +602,7 @@ function setGridZoom(
         Math.max(
             0.5,
             Math.min(
-                3,
+                4,
                 value
             )
         );
@@ -480,119 +662,6 @@ zoomResetButton.addEventListener(
     "click",
     resetZoom
 );
-
-
-// ==================================================
-// マス目を作る
-// ==================================================
-
-function createGrid(
-    width,
-    height,
-    pattern = null
-) {
-
-    grid.innerHTML = "";
-
-
-    grid.style.gridTemplateColumns =
-        `repeat(
-            ${width},
-            1fr
-        )`;
-
-
-    for (
-        let row = 0;
-        row < height;
-        row++
-    ) {
-
-        for (
-            let column = 0;
-            column < width;
-            column++
-        ) {
-
-            const index =
-                row * width +
-                column;
-
-
-            const cell =
-                document.createElement(
-                    "div"
-                );
-
-
-            cell.classList.add(
-                "cell"
-            );
-
-
-            if (
-                pattern &&
-                pattern[index]
-            ) {
-
-                cell.classList.add(
-                    "filled"
-                );
-
-            }
-
-
-            // ------------------------------------------
-            // 1本指
-            // ------------------------------------------
-
-            cell.addEventListener(
-                "pointerdown",
-                (event) => {
-
-                    event.preventDefault();
-
-                    pendingCell =
-                        cell;
-
-                    pointerMoved =
-                        false;
-
-                }
-            );
-
-
-            grid.appendChild(
-                cell
-            );
-
-        }
-
-    }
-
-
-    // ------------------------------------------
-    // 新しい編み図は100%
-    // ------------------------------------------
-
-    baseGridWidth =
-        grid.offsetWidth;
-
-
-    baseGridHeight =
-        grid.offsetHeight;
-
-
-    gridZoom = 1;
-
-    gridPanX = 0;
-
-    gridPanY = 0;
-
-
-    updateZoom();
-
-}
 
 
 // ==================================================
@@ -730,7 +799,7 @@ saveButton.addEventListener(
 
 
 // ==================================================
-// 作品を保存
+// 作品保存
 // ==================================================
 
 function saveArtwork() {
@@ -759,9 +828,9 @@ function saveArtwork() {
         getArtworks();
 
 
-    // ------------------------------------------
-    // 既存作品
-    // ------------------------------------------
+    /*
+     * 既存作品
+     */
 
     if (
         editingArtworkId !== null
@@ -803,9 +872,9 @@ function saveArtwork() {
     }
 
 
-    // ------------------------------------------
-    // 新しい作品
-    // ------------------------------------------
+    /*
+     * 新しい作品
+     */
 
     else {
 
@@ -859,7 +928,7 @@ function saveArtwork() {
 
 
 // ==================================================
-// 保存作品を取得
+// 保存作品取得
 // ==================================================
 
 function getArtworks() {
@@ -996,9 +1065,9 @@ function createArtworkCard(
     );
 
 
-    // ------------------------------------------
-    // プレビュー
-    // ------------------------------------------
+    /*
+     * プレビュー
+     */
 
     const preview =
         document.createElement(
@@ -1051,9 +1120,9 @@ function createArtworkCard(
     );
 
 
-    // ------------------------------------------
-    // 作品名
-    // ------------------------------------------
+    /*
+     * 作品名
+     */
 
     const name =
         document.createElement(
@@ -1070,9 +1139,9 @@ function createArtworkCard(
         artwork.name;
 
 
-    // ------------------------------------------
-    // サイズ
-    // ------------------------------------------
+    /*
+     * サイズ
+     */
 
     const size =
         document.createElement(
@@ -1089,9 +1158,9 @@ function createArtworkCard(
         `${artwork.width} × ${artwork.height} マス`;
 
 
-    // ------------------------------------------
-    // 編集ボタン
-    // ------------------------------------------
+    /*
+     * 編集
+     */
 
     const editButton =
         document.createElement(
@@ -1122,9 +1191,9 @@ function createArtworkCard(
     );
 
 
-    // ------------------------------------------
-    // 削除ボタン
-    // ------------------------------------------
+    /*
+     * 削除
+     */
 
     const deleteButton =
         document.createElement(
@@ -1155,9 +1224,9 @@ function createArtworkCard(
     );
 
 
-    // ------------------------------------------
-    // カードクリック
-    // ------------------------------------------
+    /*
+     * カード
+     */
 
     card.addEventListener(
         "click",
@@ -1202,7 +1271,7 @@ function createArtworkCard(
 
 
 // ==================================================
-// 保存した作品を開く
+// 保存作品を開く
 // ==================================================
 
 function openArtwork(
@@ -1229,19 +1298,19 @@ function openArtwork(
         artwork.name;
 
 
-    createGrid(
-        artwork.width,
-        artwork.height,
-        artwork.pattern
-    );
-
-
     artworksScreen.style.display =
         "none";
 
 
     editorScreen.style.display =
         "flex";
+
+
+    createGrid(
+        artwork.width,
+        artwork.height,
+        artwork.pattern
+    );
 
 }
 
@@ -1294,7 +1363,7 @@ function deleteArtwork(
 
 
 // ==================================================
-// 編み図一覧 → ホーム
+// 一覧 → ホーム
 // ==================================================
 
 artworksBackButton.addEventListener(
@@ -1334,18 +1403,22 @@ function downloadPNG() {
         );
 
 
-    const cellSize =
+    /*
+     * PNGの1マスの大きさ
+     */
+
+    const outputCellSize =
         50;
 
 
     canvas.width =
         currentWidth *
-        cellSize;
+        outputCellSize;
 
 
     canvas.height =
         currentHeight *
-        cellSize;
+        outputCellSize;
 
 
     const ctx =
@@ -1354,9 +1427,9 @@ function downloadPNG() {
         );
 
 
-    // ------------------------------------------
-    // 白背景
-    // ------------------------------------------
+    /*
+     * 白背景
+     */
 
     ctx.fillStyle =
         "white";
@@ -1370,9 +1443,9 @@ function downloadPNG() {
     );
 
 
-    // ------------------------------------------
-    // 現在のマス
-    // ------------------------------------------
+    /*
+     * 現在のマス
+     */
 
     const cells =
         document.querySelectorAll(
@@ -1395,9 +1468,9 @@ function downloadPNG() {
                 currentWidth;
 
 
-            // --------------------------------------
-            // ★ 黒いドット
-            // --------------------------------------
+            /*
+             * 黒いドット
+             */
 
             if (
                 cell.classList.contains(
@@ -1412,23 +1485,23 @@ function downloadPNG() {
                 ctx.fillRect(
 
                     column *
-                        cellSize,
+                        outputCellSize,
 
                     row *
-                        cellSize,
+                        outputCellSize,
 
-                    cellSize,
+                    outputCellSize,
 
-                    cellSize
+                    outputCellSize
 
                 );
 
             }
 
 
-            // --------------------------------------
-            // ★ 黒いマス目
-            // --------------------------------------
+            /*
+             * マス目
+             */
 
             ctx.strokeStyle =
                 "rgba(0, 0, 0, 0.35)";
@@ -1441,14 +1514,14 @@ function downloadPNG() {
             ctx.strokeRect(
 
                 column *
-                    cellSize,
+                    outputCellSize,
 
                 row *
-                    cellSize,
+                    outputCellSize,
 
-                cellSize,
+                outputCellSize,
 
-                cellSize
+                outputCellSize
 
             );
 
@@ -1456,9 +1529,9 @@ function downloadPNG() {
     );
 
 
-    // ------------------------------------------
-    // PNG作成
-    // ------------------------------------------
+    /*
+     * PNG作成
+     */
 
     canvas.toBlob(
         (blob) => {
@@ -1521,7 +1594,7 @@ function downloadPNG() {
 
 
 // ==================================================
-// 2本指操作用
+// 2点間の距離
 // ==================================================
 
 function distanceBetween(
@@ -1536,6 +1609,10 @@ function distanceBetween(
 
 }
 
+
+// ==================================================
+// 2点の中心
+// ==================================================
 
 function midpointBetween(
     a,
@@ -1566,20 +1643,15 @@ gridViewport.addEventListener(
         activePointers.set(
             event.pointerId,
             {
-
-                x:
-                    event.clientX,
-
-                y:
-                    event.clientY
-
+                x: event.clientX,
+                y: event.clientY
             }
         );
 
 
-        // ------------------------------------------
-        // 2本指になった
-        // ------------------------------------------
+        /*
+         * 2本指になった
+         */
 
         if (
             activePointers.size === 2
@@ -1605,10 +1677,6 @@ gridViewport.addEventListener(
                 );
 
 
-            const rect =
-                grid.getBoundingClientRect();
-
-
             pinchStartDistance =
                 distance;
 
@@ -1621,25 +1689,24 @@ gridViewport.addEventListener(
                 mid;
 
 
-            // 現在の編み図の位置
-            pinchBaseLeft =
-                rect.left -
-                gridPanX *
-                gridZoom;
+            /*
+             * 2本指を置いた瞬間の
+             * グリッド位置
+             */
+
+            pinchStartRect =
+                grid.getBoundingClientRect();
 
 
-            pinchBaseTop =
-                rect.top -
-                gridPanY *
-                gridZoom;
+            /*
+             * 2本指の中心が
+             * グリッド内のどこにあるか
+             */
 
-
-            // 2本指の中心が
-            // 編み図のどこにあるか
             pinchContentX =
                 (
                     mid.x -
-                    rect.left
+                    pinchStartRect.left
                 ) /
                 gridZoom;
 
@@ -1647,14 +1714,21 @@ gridViewport.addEventListener(
             pinchContentY =
                 (
                     mid.y -
-                    rect.top
+                    pinchStartRect.top
                 ) /
                 gridZoom;
 
 
-            // 1本指の塗りをキャンセル
+            /*
+             * 1本指の描画をキャンセル
+             */
+
             pendingCell =
                 null;
+
+
+            pointerMoved =
+                true;
 
 
             event.preventDefault();
@@ -1695,9 +1769,7 @@ gridViewport.addEventListener(
             );
 
 
-        // 少しでも動いたら
-        // 1本指タップではない
-        if (
+        const movement =
             Math.hypot(
 
                 event.clientX -
@@ -1706,7 +1778,11 @@ gridViewport.addEventListener(
                 event.clientY -
                     previous.y
 
-            ) > 5
+            );
+
+
+        if (
+            movement > 5
         ) {
 
             pointerMoved =
@@ -1718,23 +1794,20 @@ gridViewport.addEventListener(
         activePointers.set(
             event.pointerId,
             {
-
-                x:
-                    event.clientX,
-
-                y:
-                    event.clientY
-
+                x: event.clientX,
+                y: event.clientY
             }
         );
 
 
-        // ------------------------------------------
-        // 2本指操作
-        // ------------------------------------------
+        /*
+         * 2本指操作
+         */
 
         if (
-            activePointers.size === 2
+            activePointers.size === 2 &&
+            pinchStartDistance > 0 &&
+            pinchStartRect
         ) {
 
             const points =
@@ -1757,18 +1830,9 @@ gridViewport.addEventListener(
                 );
 
 
-            if (
-                !pinchStartDistance
-            ) {
-
-                return;
-
-            }
-
-
-            // --------------------------------------
-            // ピンチズーム
-            // --------------------------------------
+            /*
+             * ピンチによるズーム
+             */
 
             let newZoom =
                 pinchStartZoom *
@@ -1782,7 +1846,7 @@ gridViewport.addEventListener(
                 Math.max(
                     0.5,
                     Math.min(
-                        3,
+                        4,
                         newZoom
                     )
                 );
@@ -1792,28 +1856,27 @@ gridViewport.addEventListener(
                 newZoom;
 
 
-            // --------------------------------------
-            // 2本指の中心を基準にする
-            // --------------------------------------
+            /*
+             * 2本指の中心を
+             * 同じ場所に固定する
+             */
 
             gridPanX =
                 (
                     mid.x -
-                    pinchBaseLeft -
+                    pinchStartRect.left -
                     pinchContentX *
                     gridZoom
-                ) /
-                gridZoom;
+                );
 
 
             gridPanY =
                 (
                     mid.y -
-                    pinchBaseTop -
+                    pinchStartRect.top -
                     pinchContentY *
                     gridZoom
-                ) /
-                gridZoom;
+                );
 
 
             updateZoom();
@@ -1844,9 +1907,9 @@ gridViewport.addEventListener(
     "pointerup",
     (event) => {
 
-        // ------------------------------------------
-        // 1本指のタップなら塗る
-        // ------------------------------------------
+        /*
+         * 1本指タップなら塗る
+         */
 
         if (
             activePointers.size === 1 &&
@@ -1866,12 +1929,19 @@ gridViewport.addEventListener(
         );
 
 
+        /*
+         * 2本指操作終了
+         */
+
         if (
             activePointers.size < 2
         ) {
 
             pinchStartDistance =
                 0;
+
+            pinchStartRect =
+                null;
 
         }
 
@@ -1888,7 +1958,7 @@ gridViewport.addEventListener(
 
 
 // ==================================================
-// 操作キャンセル
+// 指をキャンセル
 // ==================================================
 
 gridViewport.addEventListener(
@@ -1904,6 +1974,10 @@ gridViewport.addEventListener(
             0;
 
 
+        pinchStartRect =
+            null;
+
+
         pendingCell =
             null;
 
@@ -1916,7 +1990,7 @@ gridViewport.addEventListener(
 
 
 // ==================================================
-// iPadの標準ジェスチャーを無効化
+// iPad標準ジェスチャーを無効化
 // ==================================================
 
 gridViewport.style.touchAction =
