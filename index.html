@@ -212,37 +212,91 @@
 
 
 
-        <!-- ドット絵 -->
+        <!-- =========================
+             ズーム
+        ========================== -->
 
-        <div
-            id="grid"
-            class="grid"
-        >
+        <div class="zoom-controls">
+
+            <button
+                id="zoomOutButton"
+                class="zoom-button"
+            >
+                −
+            </button>
+
+
+            <span id="zoomLabel">
+                100%
+            </span>
+
+
+            <button
+                id="zoomInButton"
+                class="zoom-button"
+            >
+                ＋
+            </button>
+
+
+            <button
+                id="zoomResetButton"
+                class="zoom-reset-button"
+            >
+                リセット
+            </button>
+
         </div>
 
 
 
-        <!-- 編集ボタン -->
+        <!-- =========================
+             ドット絵
+        ========================== -->
 
-       <div class="editor-buttons">
+        <div
+            id="gridViewport"
+            class="grid-viewport"
+        >
 
-    <button id="clearButton">
-        全消去
-    </button>
+            <div
+                id="grid"
+                class="grid"
+            >
+            </div>
 
-    <button id="editorBackButton">
-        戻る
-    </button>
+        </div>
 
-    <button id="saveButton">
-        保存
-    </button>
 
-    <button id="pngButton">
-        端末に保存
-    </button>
 
-</div>
+        <!-- =========================
+             編集ボタン
+        ========================== -->
+
+        <div class="editor-buttons">
+
+
+            <button id="clearButton">
+                全消去
+            </button>
+
+
+            <button id="editorBackButton">
+                戻る
+            </button>
+
+
+            <button id="saveButton">
+                保存
+            </button>
+
+
+            <button id="pngButton">
+                端末に保存
+            </button>
+
+
+        </div>
 
     </main>
 
