@@ -1,0 +1,708 @@
+/* =========================
+   全体
+========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+    margin: 0;
+
+    min-height: 100vh;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "SF Pro Text",
+        "Helvetica Neue",
+        sans-serif;
+
+    background: rgb(210, 240, 248);
+
+    color: white;
+
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+
+
+/* =========================
+   共通
+========================= */
+
+.screen {
+    min-height: 100vh;
+}
+
+
+button {
+
+    font-family: inherit;
+
+    border: none;
+
+    border-radius: 14px;
+
+    background: rgb(90, 180, 220);
+
+    color: white;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+
+button:hover {
+    opacity: 0.9;
+}
+
+
+button:active {
+    transform: scale(0.98);
+}
+
+
+
+/* =========================
+   ホーム
+========================= */
+
+.home {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+}
+
+
+.logo-area {
+
+    margin-top: 80px;
+}
+
+
+.logo-area h1 {
+
+    margin: 0;
+
+    font-size: 42px;
+
+    font-weight: 400;
+
+    letter-spacing: 2px;
+
+    color: rgb(235, 210, 120);
+}
+
+
+.menu {
+
+    width: min(500px, 80%);
+
+    margin-top: 100px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+
+.menu button {
+
+    width: 100%;
+
+    height: 60px;
+
+    font-size: 18px;
+
+    font-weight: 400;
+
+    letter-spacing: 1px;
+}
+
+
+
+/* =========================
+   マス目設定
+========================= */
+
+.settings {
+
+    display: none;
+
+    flex-direction: column;
+
+    align-items: center;
+}
+
+
+.settings-header {
+
+    margin-top: 45px;
+}
+
+
+.settings-header h1 {
+
+    margin: 0;
+
+    font-size: 38px;
+
+    font-weight: 400;
+
+    letter-spacing: 2px;
+
+    color: rgb(235, 210, 120);
+}
+
+
+.settings-content {
+
+    width: min(500px, 85%);
+
+    margin-top: 55px;
+}
+
+
+.settings-content h2 {
+
+    margin: 0 0 35px;
+
+    text-align: center;
+
+    font-size: 26px;
+
+    font-weight: 400;
+
+    color: rgb(90, 180, 220);
+}
+
+
+.settings-content > label {
+
+    display: block;
+
+    margin-bottom: 10px;
+
+    font-size: 18px;
+
+    font-weight: 300;
+
+    color: rgb(90, 180, 220);
+}
+
+
+#artworkName {
+
+    width: 100%;
+
+    height: 52px;
+
+    padding: 0 16px;
+
+    border: 2px solid
+        rgba(255, 255, 255, 0.7);
+
+    border-radius: 12px;
+
+    outline: none;
+
+    background:
+        rgba(255, 255, 255, 0.55);
+
+    color: rgb(90, 180, 220);
+
+    font-size: 17px;
+
+    user-select: text;
+
+    -webkit-user-select: text;
+}
+
+
+#artworkName::placeholder {
+
+    color:
+        rgba(255, 255, 255, 0.9);
+}
+
+
+
+/* 横・縦 */
+
+.size-row {
+
+    display: flex;
+
+    gap: 25px;
+
+    margin-top: 30px;
+}
+
+
+.size-item {
+
+    flex: 1;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.size-item label {
+
+    font-size: 18px;
+
+    font-weight: 300;
+
+    color: rgb(90, 180, 220);
+}
+
+
+.size-item input {
+
+    width: 75px;
+
+    height: 48px;
+
+    border: 2px solid
+        rgba(255, 255, 255, 0.7);
+
+    border-radius: 12px;
+
+    outline: none;
+
+    background:
+        rgba(255, 255, 255, 0.55);
+
+    color: rgb(90, 180, 220);
+
+    text-align: center;
+
+    font-size: 17px;
+}
+
+
+.size-item span {
+
+    font-size: 16px;
+
+    color: rgb(90, 180, 220);
+}
+
+
+
+/* 設定ボタン */
+
+.settings-buttons {
+
+    display: flex;
+
+    gap: 15px;
+
+    margin-top: 45px;
+}
+
+
+.settings-buttons button {
+
+    flex: 1;
+
+    height: 60px;
+
+    font-size: 18px;
+}
+
+
+.secondary-button {
+
+    background:
+        rgba(90, 180, 220, 0.65);
+}
+
+
+
+/* =========================
+   ドット絵制作
+========================= */
+
+.editor {
+
+    display: none;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    padding: 35px 20px 40px;
+}
+
+
+.editor-header {
+
+    text-align: center;
+}
+
+
+.editor-header h1 {
+
+    margin: 0;
+
+    font-size: 38px;
+
+    font-weight: 400;
+
+    letter-spacing: 2px;
+
+    color: rgb(235, 210, 120);
+}
+
+
+.editor-header h2 {
+
+    margin: 12px 0 0;
+
+    font-size: 22px;
+
+    font-weight: 400;
+
+    color: rgb(90, 180, 220);
+}
+
+
+
+/* =========================
+   ツール
+========================= */
+
+.tools {
+
+    display: flex;
+
+    gap: 12px;
+
+    margin-top: 25px;
+}
+
+
+.tool-button {
+
+    min-width: 120px;
+
+    height: 48px;
+
+    padding: 0 20px;
+
+    font-size: 17px;
+}
+
+
+.tool-button.active {
+
+    background: rgb(235, 210, 120);
+}
+
+
+
+/* =========================
+   マス目
+========================= */
+
+.grid {
+
+    display: grid;
+
+    margin-top: 30px;
+
+    border: 2px solid black;
+        
+
+    background: white;
+
+    touch-action: none;
+}
+
+
+.cell {
+
+    background: white;
+
+    border-right:
+        1px solid
+        rgba(0, 0, 0, 0.35);
+
+    border-bottom:
+        1px solid
+        rgba(0, 0, 0, 0.35);
+
+    aspect-ratio: 1 / 1;
+
+    cursor: pointer;
+
+    touch-action: none;
+}
+
+
+.cell.filled {
+
+    background: black;
+}
+
+
+
+/* =========================
+   編集ボタン
+========================= */
+
+.editor-buttons {
+
+    width: min(600px, 95%);
+
+    display: flex;
+
+    gap: 12px;
+
+    margin-top: 30px;
+}
+
+
+.editor-buttons button {
+
+    flex: 1;
+
+    height: 52px;
+
+    font-size: 17px;
+}
+
+
+
+/* =========================
+   編み図一覧
+========================= */
+
+.artworks {
+
+    display: none;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    padding: 45px 20px 50px;
+}
+
+
+.artworks-header h1 {
+
+    margin: 0;
+
+    font-size: 34px;
+
+    font-weight: 400;
+
+    color: rgb(90, 180, 220);
+}
+
+
+.artwork-list {
+
+    width: min(800px, 95%);
+
+    margin-top: 35px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(180px, 1fr));
+
+    gap: 20px;
+}
+
+
+
+/* =========================
+   作品カード
+========================= */
+
+.artwork-card {
+
+    padding: 15px;
+
+    border-radius: 16px;
+
+    background:
+        rgba(255, 255, 255, 0.55);
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+}
+
+
+.artwork-preview {
+
+    width: 100%;
+
+    max-width: 180px;
+
+    aspect-ratio: 1 / 1;
+
+    display: grid;
+
+    border: 1px solid black;
+
+    background: white;
+}
+
+
+.preview-cell {
+
+    background: white;
+
+    border-right:
+        1px solid
+        rgba(0, 0, 0, 0.25);
+
+    border-bottom:
+        1px solid
+        rgba(0, 0, 0, 0.25);
+}
+
+
+.preview-cell.filled {
+
+    background: black;
+}
+
+
+.artwork-name {
+
+    margin-top: 12px;
+
+    font-size: 17px;
+
+    color: rgb(90, 180, 220);
+
+    font-weight: 400;
+
+    text-align: center;
+}
+
+
+.artwork-size {
+
+    margin-top: 5px;
+
+    font-size: 14px;
+
+    color: rgb(90, 180, 220);
+}
+
+
+.delete-artwork-button {
+
+    margin-top: 12px;
+
+    width: 100%;
+
+    height: 40px;
+
+    border-radius: 10px;
+
+    background:
+        rgba(90, 180, 220, 0.65);
+
+    font-size: 14px;
+}
+
+
+
+/* =========================
+   一覧の戻るボタン
+========================= */
+
+.artworks-back-button {
+
+    width: min(300px, 80%);
+
+    height: 52px;
+
+    margin-top: 40px;
+
+    font-size: 17px;
+}
+
+
+
+/* =========================
+   iPad
+========================= */
+
+@media (min-width: 700px) {
+
+    .grid {
+
+        width: 65vw;
+
+        height: 65vw;
+
+        max-width: 650px;
+
+        max-height: 650px;
+    }
+
+}
+
+
+
+/* =========================
+   スマートフォン
+========================= */
+
+@media (max-width: 699px) {
+
+    .grid {
+
+        width: min(90vw, 500px);
+    }
+
+}
+
+/* =========================
+   作品編集ボタン
+========================= */
+
+.edit-artwork-button {
+
+    margin-top: 12px;
+
+    width: 100%;
+
+    height: 40px;
+
+    border-radius: 10px;
+
+    background:
+        rgb(90, 180, 220);
+
+    color: white;
+
+    font-size: 14px;
+}

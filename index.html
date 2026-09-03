@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Make.Lace</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         ホーム
+    ========================== -->
+
+    <main
+        id="homeScreen"
+        class="screen home"
+    >
+
+        <div class="logo-area">
+
+            <h1>Make.Lace</h1>
+
+        </div>
+
+
+        <div class="menu">
+
+            <button id="newArtworkButton">
+                新しく作る
+            </button>
+
+
+            <button id="artworksButton">
+                編み図を見る
+            </button>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =========================
+         マス目設定
+    ========================== -->
+
+    <main
+        id="settingScreen"
+        class="screen settings"
+    >
+
+        <div class="settings-header">
+
+            <h1>Make.Lace</h1>
+
+        </div>
+
+
+        <div class="settings-content">
+
+            <h2>編み図を作る</h2>
+
+
+            <label for="artworkName">
+                名前
+            </label>
+
+
+            <input
+                type="text"
+                id="artworkName"
+                placeholder="名前を入力"
+            >
+
+
+            <div class="size-row">
+
+
+                <div class="size-item">
+
+                    <label for="widthInput">
+                        横
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="widthInput"
+                        value="8"
+                        min="1"
+                        max="50"
+                    >
+
+
+                    <span>
+                        マス
+                    </span>
+
+                </div>
+
+
+
+                <div class="size-item">
+
+                    <label for="heightInput">
+                        縦
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="heightInput"
+                        value="8"
+                        min="1"
+                        max="50"
+                    >
+
+
+                    <span>
+                        マス
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="settings-buttons">
+
+
+                <button
+                    id="backButton"
+                    class="secondary-button"
+                >
+                    戻る
+                </button>
+
+
+                <button id="createButton">
+                    作る
+                </button>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =========================
+         ドット絵制作
+    ========================== -->
+
+    <main
+        id="editorScreen"
+        class="screen editor"
+    >
+
+
+        <div class="editor-header">
+
+            <h1>
+                Make.Lace
+            </h1>
+
+
+            <h2 id="editorTitle">
+                無題
+            </h2>
+
+        </div>
+
+
+
+        <!-- ペン・消しゴム -->
+
+        <div class="tools">
+
+
+            <button
+                id="penButton"
+                class="tool-button active"
+            >
+                ペン
+            </button>
+
+
+            <button
+                id="eraserButton"
+                class="tool-button"
+            >
+                消しゴム
+            </button>
+
+        </div>
+
+
+
+        <!-- ドット絵 -->
+
+        <div
+            id="grid"
+            class="grid"
+        >
+        </div>
+
+
+
+        <!-- 編集ボタン -->
+
+       <div class="editor-buttons">
+
+    <button id="clearButton">
+        全消去
+    </button>
+
+    <button id="editorBackButton">
+        戻る
+    </button>
+
+    <button id="saveButton">
+        保存
+    </button>
+
+    <button id="pngButton">
+        端末に保存
+    </button>
+
+</div>
+
+    </main>
+
+
+
+    <!-- =========================
+         編み図一覧
+    ========================== -->
+
+    <main
+        id="artworksScreen"
+        class="screen artworks"
+    >
+
+
+        <div class="artworks-header">
+
+            <h1>
+                編み図
+            </h1>
+
+        </div>
+
+
+
+        <div
+            id="artworkList"
+            class="artwork-list"
+        >
+        </div>
+
+
+
+        <button
+            id="artworksBackButton"
+            class="artworks-back-button"
+        >
+            戻る
+        </button>
+
+    </main>
+
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
