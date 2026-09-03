@@ -35,6 +35,8 @@ body {
     user-select: none;
 
     -webkit-touch-callout: none;
+
+    overflow-x: hidden;
 }
 
 
@@ -68,6 +70,7 @@ button {
         opacity 0.15s ease;
 
     -webkit-tap-highlight-color: transparent;
+
 }
 
 
@@ -536,21 +539,17 @@ button:active {
 
     max-width: 100%;
 
+    height: min(65vh, 650px);
+
     min-height: 250px;
 
     overflow: hidden;
 
-    display: flex;
-
-    justify-content: center;
-
-    align-items: flex-start;
+    position: relative;
 
     margin-top: 10px;
 
     padding: 10px;
-
-    position: relative;
 
     touch-action: none;
 
@@ -559,9 +558,27 @@ button:active {
 }
 
 
-.grid-viewport .grid {
+/* =========================
+   編み図本体
+========================= */
 
-    flex-shrink: 0;
+.grid {
+
+    --cell-size: 30px;
+
+    display: grid;
+
+    width: max-content;
+
+    height: max-content;
+
+    margin: 0;
+
+    border-top: 2px solid black;
+
+    border-left: 2px solid black;
+
+    background: white;
 
     transform-origin: 0 0;
 
@@ -569,30 +586,28 @@ button:active {
 
     touch-action: none;
 
-}
+    flex-shrink: 0;
 
+}
 
 
 /* =========================
    マス目
 ========================= */
 
-.grid {
-
-    display: grid;
-
-    margin-top: 0;
-
-    border: 2px solid black;
-
-    background: white;
-
-    touch-action: none;
-
-}
-
-
 .cell {
+
+    width: var(--cell-size);
+
+    height: var(--cell-size);
+
+    min-width: var(--cell-size);
+
+    min-height: var(--cell-size);
+
+    padding: 0;
+
+    margin: 0;
 
     background: white;
 
@@ -603,8 +618,6 @@ button:active {
     border-bottom:
         1px solid
         rgba(0, 0, 0, 0.35);
-
-    aspect-ratio: 1 / 1;
 
     cursor: pointer;
 
@@ -847,15 +860,11 @@ button:active {
 
 @media (min-width: 700px) {
 
-    .grid {
+    .grid-viewport {
 
-        width: 65vw;
+        width: 100%;
 
-        height: 65vw;
-
-        max-width: 650px;
-
-        max-height: 650px;
+        max-width: 900px;
 
     }
 
@@ -869,9 +878,11 @@ button:active {
 
 @media (max-width: 699px) {
 
-    .grid {
+    .grid-viewport {
 
-        width: min(90vw, 500px);
+        width: 100%;
+
+        height: 55vh;
 
     }
 
